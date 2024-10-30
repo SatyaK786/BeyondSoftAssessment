@@ -43,17 +43,29 @@ public class JSONToCSVMapper {
 
     // Method to build the CSV header dynamically
     private static void appendCSVHeader(StringBuilder csvOutput, String[] rowDimensions, String[] povDimensions, ArrayList<ArrayList<String>> columns) {
-        for (String rowDim : rowDimensions) {
-            csvOutput.append("\"").append(rowDim).append("\"");
-        }
-        for (String povDim : povDimensions) {
-            csvOutput.append("\"").append(povDim).append("\"");
+        // Append row dimensions with quotes
+        for (int i = 0; i < rowDimensions.length; i++) {
+            csvOutput.append("\"").append(rowDimensions[i]).append("\"");
+            if (i < rowDimensions.length - 1 || povDimensions.length > 0 || !columns.isEmpty()) {
+                csvOutput.append(",");
+            }
         }
 
-        // Add column headers if available
+        // Append POV dimensions with quotes
+        for (int i = 0; i < povDimensions.length; i++) {
+            csvOutput.append("\"").append(povDimensions[i]).append("\"");
+            if (i < povDimensions.length - 1 || !columns.isEmpty()) {
+                csvOutput.append(",");
+            }
+        }
+
+        // Append column headers if available
         if (!columns.isEmpty()) {
-            for (String columnHeader : columns.get(0)) {
-                csvOutput.append("\"").append(columnHeader).append("\"");
+            for (int i = 0; i < columns.get(0).size(); i++) {
+                csvOutput.append("\"").append(columns.get(0).get(i)).append("\"");
+                if (i < columns.get(0).size() - 1) {
+                    csvOutput.append(",");
+                }
             }
         }
         csvOutput.append("\n");  // End the header row
@@ -65,19 +77,24 @@ public class JSONToCSVMapper {
         ArrayList<String> headers = (ArrayList<String>) row.get("headers");
         ArrayList<String> data = (ArrayList<String>) row.get("data");
 
-        // Append headers (row dimensions)
+        // Append headers (row dimensions) with quotes
         for (int i = 0; i < rowDimCount; i++) {
             csvOutput.append("\"").append(headers.size() > i ? headers.get(i) : "").append("\"");
+            csvOutput.append(",");
         }
 
-        // Append POV (filter dimensions)
-        for (String povValue : pov) {
-            csvOutput.append("\"").append(povValue).append("\"");
+        // Append POV (filter dimensions) with quotes
+        for (int i = 0; i < pov.size(); i++) {
+            csvOutput.append("\"").append(pov.get(i)).append("\"");
+            csvOutput.append(",");
         }
 
-        // Append data (column values)
-        for (String dataValue : data) {
-            csvOutput.append("\"").append(dataValue).append("\"");
+        // Append data (column values) without quotes
+        for (int i = 0; i < data.size(); i++) {
+            csvOutput.append(data.get(i));
+            if (i < data.size() - 1) {
+                csvOutput.append(",");
+            }
         }
         csvOutput.append("\n");  // End the data row
     }
